@@ -2,7 +2,7 @@
 <div class="show-container">
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-            <img src="/logo.svg" width="30" height="30" class="d-inline-block align-top" alt=""> IFeaLiD
+            Welcome to P2M Lab, have fun!
         </a>
         <span v-show="initialized" class="navbar-text text-light font-weight-bold">
             {{dataset.name}} <small>{{dataset.width}}&times;{{dataset.height}}&times;{{dataset.features}} @ {{dataset.precision}}bit</small>
@@ -10,6 +10,7 @@
         <span></span>
     </nav>
     <div class="main">
+        <!-- b-modal是一种弹出窗口 -->
         <b-modal
             ref="initModal"
             :no-close-on-backdrop="true"
@@ -49,20 +50,34 @@
             </template>
         </b-modal>
         <div class="main-content">
-            <Visualization
-                ref="visualization"
-                v-bind:dataset="dataset"
-                v-on:hover="updateHoverPixelVector"
-                v-on:select="updateSelectPixelVector"
-            ></Visualization>
+            <div class="top-section">
+                <ControlBar>
+                </ControlBar>
+            </div>
+            <div class="bottom-section">
+                <div class="left-section">
+                    <ModelOverview></ModelOverview>
+                </div>
+                <div class="right-section">
+                    <button class="btn btn-primary" @click="showInitModal">Start Application</button>
+                    <Visualization
+                        ref="visualization"
+                        v-bind:dataset="dataset"
+                        v-on:hover="updateHoverPixelVector"
+                        v-on:select="updateSelectPixelVector"
+                        :key="renderKey"
+                    ></Visualization>
+                </div>
+            </div>
+            
         </div>
-        <div class="main-aside">
+        <!-- <div class="main-aside">
             <PixelVectorDisplay
                 ref="pixelVectorDisplay"
                 v-bind:dataset="dataset"
                 v-on:hover="updateHoveredFeature"
             ></PixelVectorDisplay>
-        </div>
+        </div> -->
     </div>
     <input type="file" name="file" accept="application/zip" ref="fileInput" @change="selectedFile" style="display: none;">
 </div>
@@ -71,6 +86,8 @@
 <script>
 import WebglHandler from './webgl/Handler';
 import Visualization from './components/Visualization.vue';
+import ControlBar from './components/ControlBar.vue';
+import ModelOverview from './components/ModelOverview.vue';
 import PixelVectorDisplay from './components/PixelVectorDisplay.vue';
 import {ZipReader, BlobReader, TextWriter} from "@zip.js/zip.js";
 import { BModal } from 'bootstrap-vue';
@@ -94,6 +111,8 @@ const PRECISION_STEPS = [32, 16, 8];
 
 export default {
     components: {
+        ControlBar,
+        ModelOverview,
         Visualization,
         PixelVectorDisplay,
         BModal,
@@ -104,6 +123,7 @@ export default {
             initialized: false,
             loading: false,
             error: null,
+            renderKey: 0,
         };
     },
     computed: {
@@ -116,10 +136,18 @@ export default {
         },
     },
     methods: {
+        showInitModal() {
+            this.dataset = {},
+            this.initialized = false,
+            this.loading = false,
+            this.error = null,
+            this.renderKey++;
+            this.$refs.initModal.show();
+        },
         updateHoverPixelVector(vector) {
             // Use a method instead of prop because the pixel vector array stays the
             // same object.
-            this.$refs.pixelVectorDisplay.updatePixelVector(vector);
+            // this.$refs.pixelVectorDisplay.updatePixelVector(vector);
         },
         updateSelectPixelVector(vector) {
             // Use a method instead of prop because the pixel vector array stays the
@@ -180,12 +208,11 @@ export default {
                 let entries = await reader.getEntries();
                 let entryMap = {};
                 entries.forEach(e => entryMap[e.filename] = e);
-                let metaEntry = entryMap['metadata.json'];
 
+                let metaEntry = entryMap['metadata.json'];
                 if (!metaEntry) {
                     throw new Error('The metadata.json file is missing.');
                 }
-
                 delete entryMap['metadata.json'];
                 let meta = await metaEntry.getData(new TextWriter());
                 let dataset = JSON.parse(meta);
@@ -211,7 +238,7 @@ export default {
         },
     },
     mounted() {
-        this.$refs.initModal.show();
+        // this.$refs.initModal.show();
         let dataset = new URLSearchParams(window.location.search).get('d');
         if (dataset) {
             this.loading = true;
@@ -246,6 +273,22 @@ export default {
         position: relative;
         flex: 1;
         background-image: url('/noise.png');
+        display: flex;
+        flex-direction: column;
+        .top-section {
+            flex: 15%;
+        }
+        .bottom-section {
+            flex: 85%;       
+            display: flex;
+            flex-direction: row;
+            .left-section {
+                flex: 70%;
+            }
+            .right-section{
+                flex: 30%;
+            }
+        }
     }
 
     .main-aside {
@@ -257,6 +300,7 @@ export default {
         padding: 10px 0;
         box-sizing: border-box;
     }
+    
 }
 
 .modal-footer-center {

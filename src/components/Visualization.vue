@@ -1,10 +1,13 @@
 <template>
 <div class="visualization" ref="map">
+    <!-- 加载界面 -->
     <div v-if="!ready" class="loading-overlay">
         <div v-if="error" class="alert alert-danger" v-text="errorMessage"></div>
         <LoadingIndicator v-else :size="120" :progress="loaded"></LoadingIndicator>
     </div>
-    <ColorScale v-show="ready" ref="colorScale"></ColorScale>
+    <!-- 可交互的颜色比例尺 -->
+    <!-- 热力图的常备要素，相比于静态的比例尺，更适合可交互的场景 -->
+    <!-- <ColorScale v-show="ready" ref="colorScale"></ColorScale> -->
 </div>
 </template>
 
@@ -34,6 +37,7 @@ import WebglHandler from '../webgl/Handler';
 import {BlobWriter} from "@zip.js/zip.js";
 import {containsCoordinate} from 'ol/extent';
 import {Map, View} from 'ol';
+import {defaults as defaultControls} from 'ol/control';
 
 export default {
     props: {
@@ -71,6 +75,7 @@ export default {
         },
     },
     methods: {
+        // 异步加载图片，同时更新加载进度
         fetchImages() {
             let imageHandler = new ImageHandler(this.dataset);
             let parallel = 3;
@@ -81,6 +86,7 @@ export default {
                         this.handler.storeTile(...args);
                     })
                     .then(() => {
+                        // 更新加载的进度
                         tilesLoaded += 1
                         this.loaded = tilesLoaded / promises.length;
                     });
@@ -160,6 +166,8 @@ export default {
                 view: new View({
                     projection: projection,
                 }),
+                controls: defaultControls({zoom: false}),
+                interactions:[]
             });
 
 
@@ -168,7 +176,7 @@ export default {
                     opacity: 1 - this.initialAlphaScaling,
                 });
                 slider.on('change:opacity', this.updateAlphaScaling);
-                this.map.addControl(slider);
+                // this.map.addControl(slider);
 
                 let button = new ColorButton();
                 button.on('showcolor', () => {
@@ -177,7 +185,7 @@ export default {
                 button.on('showgrayscale', () => {
                     this.overlayGrayscale = true;
                 });
-                this.map.addControl(button);
+                // this.map.addControl(button);
 
                 let overlayData = await this.dataset.overlayEntry.getData(new BlobWriter());
 
@@ -230,6 +238,7 @@ export default {
             this.colorMapProgram.link(this.stretchIntensityProgram);
         },
         renderSimilarity() {
+            // 调用render函数，输入的参数是三个函数对象
             this.handler.render([
                     this.similarityProgram,
                     this.stretchIntensityProgram,
@@ -263,20 +272,25 @@ export default {
             this.$refs.colorScale.updateStretching(this.singleFeatureProgram.getIntensityStats());
         },
         updateSimilarityColorScale() {
-            this.$refs.colorScale.updateStretching(this.similarityProgram.getIntensityStats());
+            // this.$refs.colorScale.updateStretching(this.similarityProgram.getIntensityStats());
         },
+        // 鼠标移动事件
         updateMousePosition(event) {
             if (containsCoordinate(this.extent, event.coordinate)) {
                 let oldPosition = this.similarityProgram.getMousePosition();
                 let newPosition = event.coordinate.map(Math.floor);
                 this.similarityProgram.setMousePosition(newPosition);
                 this.pixelVectorProgram.setMousePosition(newPosition);
+                // 如果鼠标移动了，就重新渲染
                 if (oldPosition[0] !== newPosition[0] || oldPosition[1] !== newPosition[1]) {
+                    // 相似度渲染
                     this.renderSimilarity();
+                    // 暂时不需要这个功能
                     this.renderPixelVector().then(this.emitHover);
                 }
             }
         },
+        // 点击事件 暂时不需要这个功能
         updateMarkerPosition(event) {
             if (containsCoordinate(this.extent, event.coordinate)) {
                 if (this.map.hasFeatureAtPixel(event.pixel)) {
@@ -316,11 +330,11 @@ export default {
         },
         initDataset() {
             try {
-                let canvas = this.initializeCanvas();
-                this.initializeOpenLayers(canvas);
-                this.initializeWebgl(canvas);
+                let canvas = this.initializeCanvas(); // 根据dataset的宽高初始化相应尺寸的canvas
+                this.initializeOpenLayers(canvas); // 初始化OpenLayers
+                this.initializeWebgl(canvas); // 初始化webgl渲染环境
                 this.initializePrograms();
-
+                // 异步代码
                 this.fetchImages()
                     .then(this.renderSimilarity)
                     .then(this.setReady)
@@ -328,12 +342,17 @@ export default {
                         if (this.overlayLayer) {
                             this.overlayLayer.setVisible(true);
                         }
+                        // 鼠标移动监听
                         this.map.on('pointermove', this.updateMousePosition);
+                        // 点击监听
+                        // 暂时不需要这个功能
                         this.map.on('click', this.updateMarkerPosition);
                     })
                     .catch((e) => {
                         this.error = new Error(`The dataset could not be loaded. ${e.message}`);
+                        console.error(e);  // Log the error to the console
                     });
+                console.log('Initialized new WebGL programs and loaded new data');
             } catch (e) {
                 this.error = new Error(`The dataset could not be loaded. ${e.message}`);
             }
@@ -380,4 +399,6 @@ export default {
         z-index: 1;
     }
 }
+
+
 </style>

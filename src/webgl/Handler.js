@@ -563,6 +563,7 @@ export default class Handler {
     }
 
     destruct() {
+        this.gl_.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         this.destruct_(this.gl_, this.assets_, this.programs_, this.canvas_);
     }
 
