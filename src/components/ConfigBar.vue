@@ -1,50 +1,114 @@
 <template>
-    <el-form ref="form" :inline="true" :model="formInline" class="demo-form-inline">
-      <el-form-item label="Approved by">
-        <el-input v-model="formInline.user" placeholder="Approved by" clearable />
-      </el-form-item>
-      <el-form-item label="Activity zone">
-        <el-select
-          v-model="formInline.region"
-          placeholder="Activity zone"
-          clearable
-          @change="$forceUpdate()"
-        >
-          <el-option label="Zone one" value="shanghai" />
-          <el-option label="Zone two" value="beijing" />
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-date-picker
-          v-model="formInline.date"
-          type="date"
-          placeholder="Pick a date"
-          clearable
-        />
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">Query</el-button>
-      </el-form-item>
-    </el-form>
-  </template>
+  <div class="config-bar">
+    <div class="config-item">
+      <label>CNN:</label>
+      <b-form-select v-model="CNN" :options="CNN_options" class="select-item"></b-form-select>
+      <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+      <label>hidden layer(s)</label>
+    </div>
+    <div class="config-item">
+      <label>Initial Model:</label>
+      <b-form-select v-model="Model" :options="Model_options" class="select-item"></b-form-select>
+      <label>unpooling:</label>
+      <b-form-select v-model="unpooling" :options="unpooling_options" class="select-item"></b-form-select>
+    </div>
+    <div class="config-item">
+      <label>Learing rate:</label>
+      <b-form-select v-model="l_rate" :options="l_rate_options" class="select-item"></b-form-select>
+      <label>Optimizer:</label>
+      <b-form-select v-model="optimizer" :options="optimizer_options" class="select-item"></b-form-select>
+      
+    </div>
+    <div class="config-item">
+      <label>Loss = </label>
+      <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+      <label>Chamfer loss + </label>
+      <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+      <label>Normal loss + </label>
+      <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+      <label>Regularization</label>
+    </div>
+    
+  </div>
+</template>
   
-  <script lang="ts" setup>
-  import { reactive } from 'vue'
+<script>
+  import { BFormSelect } from 'bootstrap-vue'
+  import { BFormSpinbutton } from 'bootstrap-vue'
+
+  export default {
+      props: {
+          
+      },
+      components: {
+        BFormSelect,
+        BFormSpinbutton
+      },
+      data () {
+          return {
+              CNN: 'VGG',
+              CNN_options: [
+                { value: 'VGG', text: 'VGG' },
+                { value: 'ResNet', text: 'ResNet' },
+              ],
+              Model: 'Ellipse',
+              Model_options: [
+                { value: 'Ellipse', text: 'Ellipse' },
+                { value: 'Voxel', text: 'Voxel' },
+              ],
+              unpooling: 'Edge',
+              unpooling_options: [
+                { value: 'Edge', text: 'Edge' },
+                { value: 'Face', text: 'Face' },
+              ],
+              l_rate: 'Edge',
+              l_rate_options: [
+                { value: 'Edge', text: 'Edge' },
+                { value: 'Face', text: 'Face' },
+              ],
+              optimizer: 'Edge',
+              optimizer_options: [
+                { value: 'Edge', text: 'Edge' },
+                { value: 'Face', text: 'Face' },
+              ],
+              value: 5,  // 用于绑定数字输入框的数据
+          };
+      },
+      computed: {
+          
+      },
+      methods: {
+          
+      },
+      watch: {
+          selected(newVal){
+            console.log('Selected value changed:', newVal)
+          }
+      },
+      mounted() {
+          
+      },
+  };
+</script>
   
-  const formInline = reactive({
-    user: '',
-    region: '',
-    date: '',
-  })
-  
-  const onSubmit = () => {
-    console.log('submit!')
+<style lang="scss" scoped>
+  .config-bar{
+    display: flex;
+    flex-direction: column;
+    font-size: 15px;
+    width: 800px;
+    .config-item{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    .select-item{
+      width: 150px;
+    }
+    .spin-item{
+      width: 150px;
+    }
   }
-  </script>
   
-  <style>
-  .demo-form-inline .el-input {
-    --el-input-width: 220px;
-  }
-  </style>
+</style>
   

@@ -14,23 +14,85 @@
 
         <div id="gradient"></div>
         <svg ref="svg" style="height: 100%; width: 100%;"></svg>
-
+        <div id="CNN-config" class="config-item">
+            <label>CNN:</label>
+            <b-form-select v-model="CNN" :options="CNN_options" id="CNN-select"></b-form-select>
+        </div>
+        <div id="hidden-config" class="config-item">
+            <div id="Hidden-spin">
+                <b-form-spinbutton v-model="value" min="0" max="10" ></b-form-spinbutton>
+            </div>
+            <label>hidden layer(s)</label>
+        </div>
+        <div id="lossing-config" class="config-item">
+            <label>Loss = </label>
+            <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+            <label>Chamfer loss + </label>
+            <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+            <label>Normal loss + </label>
+            <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+            <label>Regularization</label>
+        </div>
+        <div id="Init-config" class="config-item">
+            <label>Initial Model:</label>
+            <b-form-select v-model="Model" :options="Model_options" id="Model-select"></b-form-select>
+        </div>
+        <div id="unpooling-config" class="config-item">
+            <label>unpooling:</label>
+            <b-form-select v-model="unpooling" :options="unpooling_options" id="unpooling-item"></b-form-select>
+        </div>
+        <div id="l_rate-config" class="config-item">
+            <label>Learing rate:</label>
+            <b-form-select v-model="l_rate" :options="l_rate_options" id="l_rate-item"></b-form-select>
+        </div>
+        <div id="optimizer-config" class="config-item">
+            <label>Optimizer:</label>
+            <b-form-select v-model="optimizer" :options="optimizer_options" id="optimizer-item"></b-form-select>
+        </div>
     </div>
 </template>
     
 <script>    
     import * as d3 from 'd3'
+    import { BFormSelect } from 'bootstrap-vue'
+    import { BFormSpinbutton } from 'bootstrap-vue'
 
     export default {
         props: {
             
         },
         components: {
-           
+            BFormSelect,
+            BFormSpinbutton
         },
         data () {
             return {
-                
+                value: 5,
+                CNN: 'VGG',
+                CNN_options: [
+                    { value: 'VGG', text: 'VGG' },
+                    { value: 'ResNet', text: 'ResNet' },
+                ],
+                Model: 'Ellipse',
+                Model_options: [
+                    { value: 'Ellipse', text: 'Ellipse' },
+                    { value: 'Voxel', text: 'Voxel' },
+                ],
+                unpooling: 'Edge',
+                unpooling_options: [
+                    { value: 'Edge', text: 'Edge' },
+                    { value: 'Face', text: 'Face' },
+                ],
+                l_rate: 'Edge',
+                l_rate_options: [
+                    { value: 'Edge', text: 'Edge' },
+                    { value: 'Face', text: 'Face' },
+                ],
+                optimizer: 'Edge',
+                optimizer_options: [
+                    { value: 'Edge', text: 'Edge' },
+                    { value: 'Face', text: 'Face' },
+                ],
             };
         },
         computed: {
@@ -201,6 +263,101 @@
         }
         #model3{
             left:950px;
+        }
+        #CNN-config{
+            font-size: 20px;
+            position: absolute;
+            height: 50px;
+            top: 200px;
+            left:70px;
+            display: flex;
+            align-items: center;
+            #CNN-select{
+                margin-left: 10px;
+                width: 100px;
+            }
+        }
+        #hidden-config{
+            font-size: 20px;
+            position: absolute;
+            top: 250px;
+            left:40px;
+            display: flex;
+            align-items: center;
+            #Hidden-spin{
+                margin-right: 10px;
+                width: 120px ;
+            }
+        }
+        #Init-config{
+            font-size: 20px;
+            position: absolute;
+            height: 50px;
+            top: 550px;
+            left:50px;
+            display: flex;
+            align-items: center;
+            #Model-select{
+                margin-left: 10px;
+                width: 100px;
+            }
+        }
+        #unpooling-config{
+            font-size: 20px;
+            position: absolute;
+            height: 50px;
+            top: 600px;
+            left:50px;
+            display: flex;
+            align-items: center;
+            #unpooling-item{
+                margin-left: 10px;
+                width: 100px;
+            }
+        }
+        #optimizer-config{
+            font-size: 20px;
+            position: absolute;
+            height: 50px;
+            top: 650px;
+            left:50px;
+            display: flex;
+            align-items: center;
+            #optimizer-item{
+                margin-left: 10px;
+                width: 100px;
+            }
+        }
+        #l_rate-config{
+            font-size: 20px;
+            position: absolute;
+            height: 50px;
+            top: 700px;
+            left:50px;
+            display: flex;
+            align-items: center;
+            #l_rate-item{
+                margin-left: 10px;
+                width: 100px;
+            }
+        }
+        #lossing-config{
+            font-size: 20px;
+            position: absolute;
+            height: 50px;
+            top: 780px;
+            left:350px;
+            display: flex;
+            align-items: center;
+            .spin-item{
+                margin-left: 10px;
+                margin-right: 10px;
+                
+            }
+        }
+        .config-item label{
+            margin-bottom: 0;
+            white-space: nowrap;
         }
     }
 </style>

@@ -41,15 +41,8 @@
           </div>
         </div>
 
-        <!-- <ConfigBar></ConfigBar> -->
-        <el-select v-model="selected" placeholder="请选择" @change="handleChange">
-          <el-option
-            v-for="item in options"
-            :key="item.value"
-            :label="item.label"
-            :value="item.value">
-          </el-option>
-        </el-select>
+        <!-- <ConfigBar id="config-bar" class="top-panel-item"></ConfigBar> -->
+        
 
         <div id="timeline-controls" class="top-panel-item">
         <!--     重启按钮-->
@@ -78,48 +71,41 @@
 </template>
     
 <script>
-    import { handle } from 'express/lib/application';
-import ConfigBar from './ConfigBar.vue';
-    import { ElSelect, ElOption } from 'element-plus';
-
-  
+  import ConfigBar from './ConfigBar.vue';
     export default {
         props: {
             
         },
         components: {
-           ConfigBar,
-           ElSelect,
-           ElOption
+          ConfigBar
         },
         data () {
             return {
                 isPlaying: false,
                 pre_trained: true,
-                selected: 'Option1',
+                selected: 'Option1', // 这里存储被选中的值
                 options: [
-                  { value: 'Option1', label: 'Option 1' },
-                  { value: 'Option2', label: 'Option 2' },
-                  // 添加更多选项...
-                ],
+                  { value: null, text: '请选择一个选项' },
+                  { value: 'Option1', text: '选项 1' },
+                  { value: 'Option2', text: '选项 2' },
+                  { value: 'Option3', text: '选项 3' }
+                  // 这是你的选项列表，你可以根据需要添加更多选项
+                ]
             };
         },
         computed: {
             
         },
         methods: {
-            handleChange(){
-              this.$forceUpdate()
-            }
+            
         },
         watch: {
-            selected(newVal) {
-              console.log('Selected value changed:', newVal);
-            },
+            selected(newVal){
+              console.log('Selected value changed:', newVal)
+            }
         },
         mounted() {
-            //
-            console.log(this.selected)
+            
         },
     };
 </script>
@@ -193,7 +179,9 @@ import ConfigBar from './ConfigBar.vue';
                 height: 100%; 
                 object-fit: contain;
             }
-            
+            #config-item{
+              width: 500px;
+            }
         }
         
     }

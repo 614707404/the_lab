@@ -4,10 +4,6 @@
         <a class="navbar-brand" href="#">
             Welcome to P2M Lab, have fun!
         </a>
-        <span v-show="initialized" class="navbar-text text-light font-weight-bold">
-            {{dataset.name}} <small>{{dataset.width}}&times;{{dataset.height}}&times;{{dataset.features}} @ {{dataset.precision}}bit</small>
-        </span>
-        <span></span>
     </nav>
     <div class="main">
         <!-- b-modal是一种弹出窗口 -->
@@ -58,8 +54,7 @@
                 <div class="left-section">
                     <ModelOverview></ModelOverview>
                 </div>
-                <div class="right-section">
-                    <button class="btn btn-primary" @click="showInitModal">Start Application</button>
+                <div class="middle-section">
                     <Visualization
                         ref="visualization"
                         v-bind:dataset="dataset"
@@ -67,6 +62,10 @@
                         v-on:select="updateSelectPixelVector"
                         :key="renderKey"
                     ></Visualization>
+                </div>  
+                <div class="right-section">
+                    <button class="btn btn-primary" @click="showInitModal">Start Application</button>
+                    <LineChart :data="chartData"></LineChart>
                 </div>
             </div>
             
@@ -91,7 +90,7 @@ import ModelOverview from './components/ModelOverview.vue';
 import PixelVectorDisplay from './components/PixelVectorDisplay.vue';
 import {ZipReader, BlobReader, TextWriter} from "@zip.js/zip.js";
 import { BModal } from 'bootstrap-vue';
-
+import LineChart from './components/LineChart.vue';
 const DATASET_KEYS = [
     'precision',
     'name',
@@ -116,6 +115,7 @@ export default {
         Visualization,
         PixelVectorDisplay,
         BModal,
+        LineChart
     },
     data() {
         return {
@@ -124,6 +124,18 @@ export default {
             loading: false,
             error: null,
             renderKey: 0,
+            chartData : [
+                {x: 1, y: 5},
+                {x: 2, y: 9},
+                {x: 3, y: 7},
+                {x: 4, y: 5},
+                {x: 5, y: 3},
+                {x: 6, y: 3.5},
+                {x: 7, y: 4},
+                {x: 8, y: 2},
+                {x: 9, y: 3.5},
+                {x: 10, y: 4}
+            ]
         };
     },
     computed: {
@@ -276,17 +288,24 @@ export default {
         display: flex;
         flex-direction: column;
         .top-section {
-            flex: 15%;
+            flex: 150px;
         }
         .bottom-section {
-            flex: 85%;       
+            height: calc(100vh - 150px);
             display: flex;
             flex-direction: row;
             .left-section {
-                flex: 70%;
+                flex: 55%;
+                min-width: 1200px;
+                border-right: 1px solid $gray-900;
+            }
+            .middle-section{
+                flex: 30%;
+                background-color: beige;
             }
             .right-section{
-                flex: 30%;
+                flex: 15%;
+                background-color: azure;
             }
         }
     }
