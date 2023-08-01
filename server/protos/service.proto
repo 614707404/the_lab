@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package streaming;
+
+service StreamingService {
+  rpc BidirectionalStream (stream ClientMessage) returns (stream ServerMessage);
+}
+
+message ClientMessage {
+  string message = 1;
+}
+
+message ServerMessage {
+  string message = 1;
+  string img_feat_json = 2;
+  int32 number1 = 3;
+  int32 number2 = 4;
+}

@@ -47,7 +47,7 @@
         </b-modal>
         <div class="main-content">
             <div class="top-section">
-                <ControlBar>
+                <ControlBar :iteration-count=iterationCount>
                 </ControlBar>
             </div>
             <div class="bottom-section">
@@ -119,23 +119,16 @@ export default {
     },
     data() {
         return {
+            iterationCount :"0",
             dataset: {},
             initialized: false,
             loading: false,
             error: null,
             renderKey: 0,
             chartData : [
-                {x: 1, y: 5},
-                {x: 2, y: 9},
-                {x: 3, y: 7},
-                {x: 4, y: 5},
-                {x: 5, y: 3},
-                {x: 6, y: 3.5},
-                {x: 7, y: 4},
-                {x: 8, y: 2},
-                {x: 9, y: 3.5},
-                {x: 10, y: 4}
-            ]
+                
+            ],
+            socket: null
         };
     },
     computed: {
@@ -250,6 +243,25 @@ export default {
         },
     },
     mounted() {
+        this.socket = new WebSocket('ws://localhost:8080');
+
+        this.socket.onmessage = event => {
+            console.log(event)
+            let parsedData = JSON.parse(event.data);
+            console.log(parsedData)
+            this.iterationCount = parsedData.message
+            this.chartData.push({x: parseInt(parsedData.message), y: parsedData.number1 })
+            console.log('Received message from server: ' + event.data);
+            // 在这里你可以根据收到的消息更新你的组件的状态或触发其他方法
+        };
+
+        this.socket.onclose = event => {
+            console.log('WebSocket connection closed');
+        };
+
+        this.socket.onerror = error => {
+            console.error('WebSocket error: ' + error);
+        };
         // this.$refs.initModal.show();
         let dataset = new URLSearchParams(window.location.search).get('d');
         if (dataset) {
@@ -258,7 +270,11 @@ export default {
                 .then(response => response.blob())
                 .then(this.loadDataset)
         }
-    },
+    }, beforeDestroy: function() {
+        if (this.socket) {
+            this.socket.close();
+        }
+    }
 }
 </script>
 

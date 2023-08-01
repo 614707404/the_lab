@@ -52,7 +52,7 @@
           </button>
         <!--    启动/暂停按钮-->
           <button
-            id="play-pause-button" title="Run/Pause training" @click="isPlaying = !isPlaying">
+            id="play-pause-button" title="Run/Pause training" @click="togglePlayPause">
             <img class="material-icons" id="button-top-play" src="/kaishi.svg" v-if="!isPlaying"/>
             <img class="material-icons" id="button-top-pause" src="zanting.svg" v-else/>
           </button>
@@ -62,7 +62,7 @@
         <!--   当前Epoch数量-->
         <div id="iteration" class="top-panel-item">
           <div class="top-column-title">Epoch</div>
-          <div id="iteration-count">0</div>
+          <div id="iteration-count" v-text="iterationCount"></div>
         </div>
         </div>
 
@@ -72,15 +72,19 @@
     
 <script>
   import ConfigBar from './ConfigBar.vue';
+  import axios from 'axios'; 
     export default {
         props: {
-            
+          iterationCount: {
+              default: "0"
+          }
         },
         components: {
           ConfigBar
         },
         data () {
             return {
+                // iterationCount: 0,
                 isPlaying: false,
                 pre_trained: true,
                 selected: 'Option1', // 这里存储被选中的值
@@ -97,7 +101,23 @@
             
         },
         methods: {
-            
+            togglePlayPause() {
+              this.isPlaying = !this.isPlaying;
+
+              // 你的 Express 服务器端的 URL，可能需要进行修改
+              let url = 'http://localhost:3000/play_pause';  
+              
+              // 使用 axios 发送请求
+              axios.post(url, {
+                isPlaying: this.isPlaying
+              })
+              .then(response => {
+                console.log(response.data);
+              })
+              .catch(error => {
+                console.error(error);
+              });
+            },
         },
         watch: {
             selected(newVal){
