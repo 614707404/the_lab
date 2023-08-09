@@ -7,7 +7,7 @@
     </nav>
     <div class="main">
         <!-- b-modal是一种弹出窗口 -->
-        <b-modal
+        <!-- <b-modal
             ref="initModal"
             :no-close-on-backdrop="true"
             :no-close-on-esc="true"
@@ -44,28 +44,31 @@
                     Select ZIP file
                 </button>
             </template>
-        </b-modal>
+        </b-modal> -->
         <div class="main-content">
             <div class="top-section">
-                <ControlBar :iteration-count=iterationCount>
-                </ControlBar>
+                <div class="top-bar">
+                    <ControlBar :iteration-count=iterationCount></ControlBar>
+                </div>
             </div>
             <div class="bottom-section">
                 <div class="left-section">
-                    <ModelOverview></ModelOverview>
+                    <ModelOverview id="model-overview"></ModelOverview>
                 </div>
                 <div class="middle-section">
-                    <Visualization
+                    <div id="feature-visual"></div>
+                    <div id="modle-visual"></div>
+                    <!-- <Visualization
                         ref="visualization"
                         v-bind:dataset="dataset"
                         v-on:hover="updateHoverPixelVector"
                         v-on:select="updateSelectPixelVector"
                         :key="renderKey"
-                    ></Visualization>
+                    ></Visualization> -->
                 </div>  
                 <div class="right-section">
-                    <button class="btn btn-primary" @click="showInitModal">Start Application</button>
-                    <LineChart :data="chartData"></LineChart>
+                    <!-- <button class="btn btn-primary" @click="showInitModal">Start Application</button> -->
+                    <!-- <LineChart :data="chartData"></LineChart> -->
                 </div>
             </div>
             
@@ -288,42 +291,123 @@ export default {
     .navbar {
         border-bottom: 1px solid $gray-900;
     }
-    .main {
-        display: flex;
-        flex: 1;
-        overflow: hidden;
-        position: relative;
-    }
+    // .main {
+    //     display: flex;
+    //     flex: 1;
+    //     overflow: hidden;
+    //     position: relative;
+    // }
 
-    .main-content {
-        width: 100%;
-        height: 100%;
-        position: relative;
-        flex: 1;
-        background-image: url('/noise.png');
+    // .main-content {
+    //     width: 100%;
+    //     height: 100%;
+    //     position: relative;
+    //     flex: 1;
+    //     background-image: url('/noise.png');
+    //     display: flex;
+    //     flex-direction: column;
+    //     .top-section {
+    //         flex: 150px;
+    //         background-color: aquamarine;
+    //     }
+    //     .bottom-section {
+    //         height: calc(100vh - 150px);
+    //         display: flex;
+    //         flex-direction: row;
+    //         .left-section {
+    //             width: 1000px;
+    //             border-right: 1px solid $gray-900;
+    //             background-color: aqua;
+    //         }
+    //         .middle-section{
+    //             width: 300px;
+    //             background-color: beige;
+    //         }
+    //         .right-section{
+    //             width: 100px;
+    //             background-color: azure;
+    //         }
+    //     }
+    // }
+
+    .main-content{
         display: flex;
         flex-direction: column;
+        height: 100vh;
         .top-section {
-            flex: 150px;
+             height: 120px;
+    // position: relative; /* 设置为 relative 以便内部的 top-bar 可以使用 absolute 定位 */
+    // overflow-x: auto; /* 当内容宽度超过容器宽度时显示滚动条 */
+    
+            // height: 150px;
+            // // width: 1600px; /* 设置固定宽度 */
+            // // margin: 0 auto; 
+            // display: flex;
+            // justify-content: center; /* 使内部内容水平居中 */
+            // align-items: center; /* 使内部内容垂直居中 */
+            background-color: #a09797; /* 只是为了可视化，你可以根据需要修改 */
+            .top-bar{
+                margin: 0 auto; 
+                width: 1600px; /* 例如：300px; 请根据需要设置 */
+                height: 100%; /* 例如：100px; 请根据需要设置 */
+                background-color: #300da4; /* 只是为了可视化，你可以根据需要修改，例如：#b0b0b0; */
+            }
         }
         .bottom-section {
-            height: calc(100vh - 150px);
+            flex: 1; /* 占据剩余的空间 */
+            width: 1600px; /* 设置固定宽度 */
+            margin: 0 auto; /* 使其在大屏幕上居中 */
+            overflow-x: auto; /* 当内容宽度超过容器宽度时显示滚动条 */
             display: flex;
-            flex-direction: row;
+            justify-content: center; /* 使内部内容水平居中 */
+            align-items: center; /* 使内部内容垂直居中 */
+            background-color: #d0d0d0; /* 只是为了可视化，你可以根据需要修改 */
             .left-section {
-                flex: 55%;
-                min-width: 1200px;
-                border-right: 1px solid $gray-900;
+                width: 940px;
+                height: 100%;
+                background-color: #c0c0c0; /* 只是为了可视化，你可以根据需要修改 */
+                overflow: hidden; /* 如果组件超出容器，则隐藏其余部分 */
+                position: relative;
+                #model-overview{
+                    transform-origin: top left; /* 设置缩放的基点 */
+                    transform: scale(0.79); /* 设置缩放比例，例如 0.5 会将其缩小到50% */
+                    position: absolute; /* 使其脱离正常文档流 */
+                    top: 0;
+                    left: 0;
+                }
             }
-            .middle-section{
-                flex: 30%;
-                background-color: beige;
+
+            .middle-section {
+                width: 360px;
+                height: 100%;
+                background-color: #a42424; /* 只是为了可视化，你可以根据需要修改 */
+                position: relative;
+                #feature-visual{
+                    position: absolute;
+                    width: 300px;
+                    height: 300px;
+                    
+                    top: 30px;
+                    left: 30px;
+                    background-color: #300da4;
+                }
+                #modle-visual{
+                    position: absolute;
+                    width: 300px;
+                    height: 300px;
+                    top: 360px;
+                    left: 30px;
+                    background-color: #6d4cda;
+                }
             }
-            .right-section{
-                flex: 15%;
-                background-color: azure;
+
+            .right-section {
+                width: 300px;
+                height: 100%;
+                background-color: #a0a0a0; /* 只是为了可视化，你可以根据需要修改 */
             }
         }
+        
     }
 
     .main-aside {

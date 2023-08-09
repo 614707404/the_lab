@@ -1,5 +1,6 @@
 <template>
     <div class="modeloverview">
+    <!-- <div id="cav"> -->
         <div id="inputimg"></div>
         
         <div id="feature1" class="feature"></div>
@@ -49,6 +50,7 @@
             <label>Optimizer:</label>
             <b-form-select v-model="optimizer" :options="optimizer_options" id="optimizer-item"></b-form-select>
         </div>
+    <!-- </div> -->
     </div>
 </template>
     
@@ -205,9 +207,20 @@
     .modeloverview {
         background-color: #eee;
         border-bottom: 2px solid #ddd;
-        width: 100%;
-        height: 100%;
+        width: 1200px;
+        height: 1000px;
         position: relative;
+        // overflow: hidden; /* 如果组件超出容器，则隐藏其余部分 */
+        // position: relative;
+        // #cav{
+        //     width: 100%;
+        //     height: 100%;
+        //     transform-origin: top left; /* 设置缩放的基点 */
+        //     transform: scale(0.7); /* 设置缩放比例，例如 0.5 会将其缩小到50% */
+        //     position: absolute; /* 使其脱离正常文档流 */
+        //     top: 0;
+        //     left: 0;
+        
         #gradient{
             width: 100px;
             height: 100px;
@@ -346,7 +359,7 @@
             position: absolute;
             height: 50px;
             top: 780px;
-            left:350px;
+            left:325px;
             display: flex;
             align-items: center;
             .spin-item{
@@ -359,6 +372,7 @@
             margin-bottom: 0;
             white-space: nowrap;
         }
+    // }
     }
 </style>
     

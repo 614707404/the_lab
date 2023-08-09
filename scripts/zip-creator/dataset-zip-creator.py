@@ -74,7 +74,7 @@ class ZipCreator(object):
             with np.load(self.file) as npz_file:
                 data = npz_file[npz_file.files[0]]
 
-        if data.ndim != 3:
+        if data[0].ndim != 3:
             raise ValueError('The input data has an unexpected number of dimensions ({} given, 3 expected).'.format(data.ndim))
 
         zip_file = ZipFile(self.out_file, 'w')
@@ -82,9 +82,9 @@ class ZipCreator(object):
 
         metadata = {
             'name': self.name,
-            'width': data.shape[1],
-            'height': data.shape[0],
-            'features': data.shape[2],
+            'width': data[0].shape[1],
+            'height': data[0].shape[0],
+            'features': data[0].shape[2],
             'precision': self.precision,
             'overlay': has_overlay,
         }
@@ -95,11 +95,11 @@ class ZipCreator(object):
             zip_file.writestr('overlay.jpg', bytes_io.getvalue())
 
         if self.precision == 32:
-            self.create32_(data, zip_file, metadata)
+            self.create32_(data[0], zip_file, metadata)
         elif self.precision == 16:
-            self.create16_(data, zip_file, metadata)
+            self.create16_(data[0], zip_file, metadata)
         else:
-            self.create8_(data, zip_file, metadata)
+            self.create8_(data[0], zip_file, metadata)
 
         zip_file.writestr('metadata.json', json.dumps(metadata))
         zip_file.close()
