@@ -48,27 +48,42 @@
         <div class="main-content">
             <div class="top-section">
                 <div class="top-bar">
-                    <ControlBar :iteration-count=iterationCount></ControlBar>
+                    <ControlBar :iteration-count=iterationCount @updateVisiable = "toggleModelParameter"></ControlBar>
                 </div>
             </div>
             <div class="bottom-section">
                 <div class="left-section">
-                    <ModelOverview id="model-overview"></ModelOverview>
+                    <ModelOverview 
+                        id="model-overview" 
+                        :editVisiable = "editVisiable"
+                        v-bind:img_feat_data="img_feat_data"
+                        @change_path = "change_path"
+                        
+                    ></ModelOverview>
                 </div>
                 <div class="middle-section">
-                    <div id="feature-visual"></div>
-                    <div id="modle-visual"></div>
-                    <!-- <Visualization
+                    <Visualization
+                        id="feature-visual"
                         ref="visualization"
                         v-bind:dataset="dataset"
+                        v-bind:dimensions="dimensions"
                         v-on:hover="updateHoverPixelVector"
                         v-on:select="updateSelectPixelVector"
                         :key="renderKey"
-                    ></Visualization> -->
+                        
+                    ></Visualization>
+                    <div id="modle-visual">
+                        <ThreeModelMouse :objPath="objPath" :key="renderKey" @particleSelected="handleParticleSelected"></ThreeModelMouse>
+                        <!-- <Test></Test> -->
+                    </div>
+                    
                 </div>  
                 <div class="right-section">
                     <!-- <button class="btn btn-primary" @click="showInitModal">Start Application</button> -->
                     <!-- <LineChart :data="chartData"></LineChart> -->
+                    <LineChart :datasets="yData_1" :xData="xData"></LineChart>
+                    <LineChart :datasets="yData_2" :xData="xData"></LineChart>
+                    <LineChart :datasets="yData_3" :xData="xData"></LineChart>
                 </div>
             </div>
             
@@ -94,6 +109,10 @@ import PixelVectorDisplay from './components/PixelVectorDisplay.vue';
 import {ZipReader, BlobReader, TextWriter} from "@zip.js/zip.js";
 import { BModal } from 'bootstrap-vue';
 import LineChart from './components/LineChart.vue';
+import ThreeModel from './components/ThreeModel.vue';
+import ThreeModelMouse from './components/ThreeModelMouse.vue';
+import Test from './components/Test.vue';
+
 const DATASET_KEYS = [
     'precision',
     'name',
@@ -113,13 +132,15 @@ const PRECISION_STEPS = [32, 16, 8];
 
 export default {
     components: {
-        ControlBar,
-        ModelOverview,
-        Visualization,
-        PixelVectorDisplay,
-        BModal,
-        LineChart
-    },
+    ControlBar,
+    ModelOverview,
+    Visualization,
+    PixelVectorDisplay,
+    BModal,
+    LineChart,
+    ThreeModel,
+    ThreeModelMouse
+},
     data() {
         return {
             iterationCount :"0",
@@ -131,7 +152,28 @@ export default {
             chartData : [
                 
             ],
-            socket: null
+            socket: null,
+            editVisiable: false,
+            img_feat_data:{},
+            objPath:'test.obj',
+            xData: [],
+            yData_1: [
+                { name: "mean loss", data: [] }
+            ],
+            yData_2: [
+                { name: "p_loss", data: [] },
+                { name: "e_loss", data: [] },
+                { name: "n_loss", data: [] },
+                { name: "loss", data: [] },
+            ],
+            yData_3: [
+                { name: "l_loss", data: [] },
+                { name: "m_loss", data: [] }
+            ],
+            dimensions: {
+                height: -1,
+                width: -1
+            }
         };
     },
     computed: {
@@ -144,13 +186,37 @@ export default {
         },
     },
     methods: {
+        handleParticleSelected(position) {
+            console.log('Received position from child:', position);
+            let h = 248.0 * (-position.y / -position.z) + 112.0
+            let w = 248.0 * (position.x / -position.z) + 112.0
+            
+            h = Math.min(Math.max(h, 0), 223);
+            w = Math.min(Math.max(w, 0), 223);
+            this.dimensions = Object.assign({}, this.dimensions, {height: h * 0.5 , width: w * 0.5});
+
+            // console.log('h:', this.dimensions.height);
+            // console.log('w:', this.dimensions.width);
+        },
+        change_path(data){
+            let type = data.str1;
+            let path = data.str2;
+            if(type == 'feature'){
+                this.handleDataset(path)
+            }else{
+                this.objPath = path
+            }
+        },
+        toggleModelParameter() {
+            console.log("toggleModelParameter")
+            this.editVisiable = !this.editVisiable;
+        },
         showInitModal() {
             this.dataset = {},
             this.initialized = false,
             this.loading = false,
-            this.error = null,
-            this.renderKey++;
-            this.$refs.initModal.show();
+            this.error = null;
+            // this.$refs.initModal.show();
         },
         updateHoverPixelVector(vector) {
             // Use a method instead of prop because the pixel vector array stays the
@@ -242,20 +308,93 @@ export default {
                 this.loading = false;
             }
 
-            this.$refs.initModal.hide();
+            // this.$refs.initModal.hide();
         },
+        async handleDataset(path){
+            let response = await fetch(path);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch the file.');
+                } else {
+                    console.log('fetch the file');
+                    this.renderKey++;
+                }
+                let blob = await response.blob();
+                this.loadDataset(blob)
+        },
+        async handleFileLoadSignal(){
+            try {
+                let response_json = await fetch("img_feat_json.json");
+                this.img_feat_data = await response_json.json();
+                this.handleDataset("C5.8.zip")
+                
+                // const fileData = await readFileAsync('/home/giga/Desktop/davistao/p2m_tf2/Pixel2Mesh-Tensorflow2/C1.8.zip');
+                // console.log(fileData);
+                // 此处处理 fileData
+            } catch (error) {
+                console.error('Error reading file:', error);
+            }
+        }
     },
     mounted() {
         this.socket = new WebSocket('ws://localhost:8080');
 
         this.socket.onmessage = event => {
-            console.log(event)
+            // console.log(event)
             let parsedData = JSON.parse(event.data);
-            console.log(parsedData)
+            // console.log(parsedData)
             this.iterationCount = parsedData.message
-            this.chartData.push({x: parseInt(parsedData.message), y: parsedData.number1 })
-            console.log('Received message from server: ' + event.data);
-            // 在这里你可以根据收到的消息更新你的组件的状态或触发其他方法
+            // number1 损失
+            // number2 平均损失
+            // this.chartData.push({
+            //         x: parseInt(parsedData.message),
+            //         y1: parsedData.number1 , 
+            //         y2: parsedData.number2,
+            //         y3: parsedData.p_loss,
+            //         y4: parsedData.e_loss,
+            //         y5: parsedData.n_loss,
+            //         y6: parsedData.l_loss,
+            //         y7: parsedData.m_loss})
+            // console.log('Received message from server: ' + event.data);
+            this.xData.push(parseInt(parsedData.message));
+            let dataset = this.yData_1.find(d => d.name === "mean loss");
+            if (dataset) {
+                dataset.data.push(parsedData.number2);
+            }
+
+            dataset = this.yData_2.find(d => d.name === "loss");
+            if (dataset) {
+                dataset.data.push(parsedData.number1);
+            }
+
+            dataset = this.yData_2.find(d => d.name === "p_loss");
+            if (dataset) {
+                dataset.data.push(parsedData.p_loss);
+            }
+
+            dataset = this.yData_2.find(d => d.name === "e_loss");
+            if (dataset) {
+                dataset.data.push(parsedData.e_loss);
+            }
+
+            dataset = this.yData_2.find(d => d.name === "n_loss");
+            if (dataset) {
+                dataset.data.push(parsedData.n_loss);
+            }
+
+            dataset = this.yData_3.find(d => d.name === "m_loss");
+            if (dataset) {
+                dataset.data.push(parsedData.m_loss);
+            }
+
+            dataset = this.yData_3.find(d => d.name === "l_loss");
+            if (dataset) {
+                dataset.data.push(parsedData.l_loss);
+            }
+
+            if(parsedData.img_feat_json == 'T'){
+                console.log("img_feat_json")
+                this.handleFileLoadSignal()
+            }
         };
 
         this.socket.onclose = event => {
@@ -273,6 +412,7 @@ export default {
                 .then(response => response.blob())
                 .then(this.loadDataset)
         }
+        this.handleFileLoadSignal()
     }, beforeDestroy: function() {
         if (this.socket) {
             this.socket.close();
@@ -289,7 +429,7 @@ export default {
     flex-direction: column;
 
     .navbar {
-        border-bottom: 1px solid $gray-900;
+        // border-bottom: 1px solid $gray-900;
     }
     // .main {
     //     display: flex;
@@ -334,6 +474,7 @@ export default {
         display: flex;
         flex-direction: column;
         height: 100vh;
+        background-color: #eee;
         .top-section {
              height: 120px;
     // position: relative; /* 设置为 relative 以便内部的 top-bar 可以使用 absolute 定位 */
@@ -345,12 +486,13 @@ export default {
             // display: flex;
             // justify-content: center; /* 使内部内容水平居中 */
             // align-items: center; /* 使内部内容垂直居中 */
-            background-color: #a09797; /* 只是为了可视化，你可以根据需要修改 */
+            background-color: #eee; /* 只是为了可视化，你可以根据需要修改 */
+            border-bottom:  2px solid #ddd;
             .top-bar{
                 margin: 0 auto; 
                 width: 1600px; /* 例如：300px; 请根据需要设置 */
                 height: 100%; /* 例如：100px; 请根据需要设置 */
-                background-color: #300da4; /* 只是为了可视化，你可以根据需要修改，例如：#b0b0b0; */
+                background-color: #eee; /* 只是为了可视化，你可以根据需要修改，例如：#b0b0b0; */
             }
         }
         .bottom-section {
@@ -361,11 +503,11 @@ export default {
             display: flex;
             justify-content: center; /* 使内部内容水平居中 */
             align-items: center; /* 使内部内容垂直居中 */
-            background-color: #d0d0d0; /* 只是为了可视化，你可以根据需要修改 */
+            background-color: #eee; /* 只是为了可视化，你可以根据需要修改 */
             .left-section {
                 width: 940px;
                 height: 100%;
-                background-color: #c0c0c0; /* 只是为了可视化，你可以根据需要修改 */
+                background-color: #eee; /* 只是为了可视化，你可以根据需要修改 */
                 overflow: hidden; /* 如果组件超出容器，则隐藏其余部分 */
                 position: relative;
                 #model-overview{
@@ -380,8 +522,12 @@ export default {
             .middle-section {
                 width: 360px;
                 height: 100%;
-                background-color: #a42424; /* 只是为了可视化，你可以根据需要修改 */
+                
+                // background-color: #a42424; /* 只是为了可视化，你可以根据需要修改 */
                 position: relative;
+                border-left: 2px solid #ddd;
+                border-right: 2px solid #ddd;
+
                 #feature-visual{
                     position: absolute;
                     width: 300px;
@@ -389,7 +535,7 @@ export default {
                     
                     top: 30px;
                     left: 30px;
-                    background-color: #300da4;
+                    // background-color: #300da4;
                 }
                 #modle-visual{
                     position: absolute;
@@ -404,7 +550,7 @@ export default {
             .right-section {
                 width: 300px;
                 height: 100%;
-                background-color: #a0a0a0; /* 只是为了可视化，你可以根据需要修改 */
+                background-color: #eee; /* 只是为了可视化，你可以根据需要修改 */
             }
         }
         
@@ -413,7 +559,7 @@ export default {
     .main-aside {
         height: 100%;
         width: 200px;
-        border-left: 1px solid $gray-900;
+        // border-left: 1px solid $gray-900;
         position: relative;
         overflow: hidden;
         padding: 10px 0;

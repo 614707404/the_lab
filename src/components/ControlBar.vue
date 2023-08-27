@@ -7,38 +7,16 @@
         <div id="distribution-selection" class="top-panel-item">
           <div class="top-column-title">Input Image</div>
           <div id="distribution-image-list">
-            <div class="distribution-image">
-              <img class="distribution-item"
-                id="distribution-item-line"
-                data-distribution-name="line"
-                title="Simple line"
-                />
-            </div>
-            <div class="distribution-image">
-              <img class="distribution-item selected"
-                id="distribution-item-gaussians"
-                data-distribution-name="gaussians"
-                title="Mixture of Gaussians"
-                />
-            </div>
-            <div class="distribution-image">
-              <img class="distribution-item"
-                id="distribution-item-ring"
-                data-distribution-name="ring"
-                title="Ring"
-                />
-            </div>
-            <div class="distribution-image">
-              <img class="distribution-item"
-                id="distribution-item-disjoint"
-                data-distribution-name="disjoint"
-                title="3 disjoint regions"/>
-            </div>
+            <img class="distribution-image" src="../assets/plane1.png"/>
+            <img class="distribution-image" src="../assets/plane2.png"/>
+            <img class="distribution-image" src="../assets/0.png"/>
+            <img class="distribution-image" src="../assets/2.png"/>
           </div>
             <!--      是否使用预训练模型-->
-          <div id="distribution-selection-checkbox">
-            <el-checkbox id="toggle-pretrained" v-model="pre_trained" label="Use pre-trained model" size="large" />
-          </div>
+            <div id="distribution-selection-checkbox">
+                <input type="checkbox" id="toggle-pretrained" v-model="pre_trained" />
+                <label for="toggle-pretrained">Use pre-trained model</label>
+            </div>
         </div>
 
         <!-- <ConfigBar id="config-bar" class="top-panel-item"></ConfigBar> -->
@@ -48,13 +26,17 @@
         <!--     重启按钮-->
           <button
             id="reset-button" title="Reset the model">
-            <img class="material-icons" id="button-top-reset" src="/chehui.svg"/>
+            <img class="material-icons" id="button-top-reset" src="/chehuinew.svg"/>
           </button>
         <!--    启动/暂停按钮-->
           <button
             id="play-pause-button" title="Run/Pause training" @click="togglePlayPause">
-            <img class="material-icons" id="button-top-play" src="/kaishi.svg" v-if="!isPlaying"/>
-            <img class="material-icons" id="button-top-pause" src="zanting.svg" v-else/>
+            <img class="material-icons" id="button-top-play" src="/bofangnew.svg" v-if="!isPlaying"/>
+            <img class="material-icons" id="button-top-pause" src="zantingnew.svg" v-else/>
+          </button>
+          <button
+            id="edit-button" title="edit the config" @click="updateVisiable">
+            <img class="material-icons" id="button-top-edit" src="/bianji-2new.svg"/>
           </button>
         </div>
 
@@ -77,7 +59,7 @@
         props: {
           iterationCount: {
               default: "0"
-          }
+          },
         },
         components: {
           ConfigBar
@@ -118,6 +100,10 @@
                 console.error(error);
               });
             },
+            updateVisiable(){
+              console.log("updateVisiable")
+              this.$emit('updateVisiable');
+            }
         },
         watch: {
             selected(newVal){
@@ -135,15 +121,16 @@
         height: 100%;
         width: 100%;
         background-color: #eee;
-        border-bottom: 2px solid #ddd;
+        // border-bottom: 2px solid #ddd;
         font-size: 30px;
-        padding: 10px 0 9px;
+        // padding: 10px 0 9px;
         .top-panel{
             display: flex;
             margin-left: 50px;
             margin-right: auto;
             justify-content: space-between;
             width: 1000px;
+            height: 100%;
             align-items: center;
             .top-panel-item {
                 margin-left: 30px;
@@ -156,33 +143,63 @@
                 margin-right: 60px;
                 padding-left: 20px;
             }
-            #distribution-selection .top-column-title {
-                color: #222;
-                font-size: 15px;
-            }
-            #distribution-image-list {
+            #distribution-selection{
+              #distribution-image-list {
+                  height: 30px;
+                  margin-bottom: 5px;
+                  display: flex;
+                  align-items: center; 
+                  .distribution-image {
+                    border: 1px solid #cccccc;
+                    height: 30px;
+                    margin-right: 7px;
+                    width: 30px;
+                    padding: 0;
+                    display: block;
+                    
+                  }
+                 
+              }
+              .top-column-title {
+                  color: #222;
+                  font-size: 15px;
+              }
+              #distribution-selection-checkbox{
                 display: flex;
-                height: 30px;
+                justify-content: center;  /* 水平居中 */
+                align-items: center; 
+                padding: 0;
+                margin-bottom: 5px;
+                #toggle-pretrained{
+                  padding: 0;
+                  line-height: 1;
+                }
+                label{
+                  padding: 0;
+                  line-height: 1;
+                  margin: 0 0 0 5px;
+                  font-size: 15px;
+                }
+              } 
             }
-            .distribution-image {
-                height: 30px;
-                margin-right: 7px;
-                width: 30px;
-            }
-
-            .distribution-image img{
-                cursor: pointer;
-                height: 30px;
-                width: 30px;
-            }
+            
+            
 
             #timeline-controls {
                 align-items: center;
                 display: flex;
                 justify-content: center;
             }
+            
+
 
             #timeline-controls #reset-button {
+                margin-right: 11px;
+                width: 50px;  
+                height: 50px; 
+                border: none;
+            }
+            #timeline-controls #edit-button {
                 margin-right: 11px;
                 width: 50px;  
                 height: 50px; 
@@ -202,6 +219,7 @@
             #config-item{
               width: 500px;
             }
+            
         }
         
     }

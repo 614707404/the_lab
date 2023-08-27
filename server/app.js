@@ -59,7 +59,7 @@ const call = client.BidirectionalStream();
 // Listen for messages from the server
 call.on('data', function(ServerMessage) {
   vue_client.send(JSON.stringify(ServerMessage));
-  console.log('Received message from server: ' + ServerMessage);
+  // console.log('Received message from server: ' + ServerMessage);
 });
 
 call.on('error', function(e) {

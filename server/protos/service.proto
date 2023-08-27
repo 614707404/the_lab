@@ -15,4 +15,9 @@ message ServerMessage {
   string img_feat_json = 2;
   int32 number1 = 3;
   int32 number2 = 4;
+  int32 p_loss = 5;
+  int32 e_loss = 6;
+  int32 n_loss = 7;
+  int32 l_loss = 8;
+  int32 m_loss = 9;
 }

@@ -45,6 +45,10 @@ export default {
             required: true,
             type: Object,
         },
+        dimensions: {
+            required: true,  // 如果这个props是必需的
+            type: Object,    // 根据你的需要设置类型，这里我设为Object
+        },
     },
     components: {
         LoadingIndicator,
@@ -263,7 +267,7 @@ export default {
             this.$emit('hover', this.pixelVectorProgram.getPixelVector());
         },
         emitSelect() {
-            this.$emit('select', this.pixelVectorProgram.getPixelVector().slice());
+            // this.$emit('select', this.pixelVectorProgram.getPixelVector().slice());
         },
         emitUnselect() {
             this.$emit('select', []);
@@ -277,6 +281,7 @@ export default {
         // 鼠标移动事件
         updateMousePosition(event) {
             if (containsCoordinate(this.extent, event.coordinate)) {
+                console.log("event.coordinate", event.coordinate)
                 let oldPosition = this.similarityProgram.getMousePosition();
                 let newPosition = event.coordinate.map(Math.floor);
                 this.similarityProgram.setMousePosition(newPosition);
@@ -290,22 +295,39 @@ export default {
                 }
             }
         },
+        updateDimensions() {
+            
+            let oldPosition = this.similarityProgram.getMousePosition();
+            let newPosition = [Math.floor(this.dimensions.height), Math.floor(this.dimensions.width)];
+            this.markerLayer.setVisible(true);
+            this.markerFeature.getGeometry().setCoordinates(newPosition);
+            this.similarityProgram.setMousePosition(newPosition);
+            this.pixelVectorProgram.setMousePosition(newPosition);
+                // 如果鼠标移动了，就重新渲染
+            if (oldPosition[0] !== newPosition[0] || oldPosition[1] !== newPosition[1]) {
+                // 相似度渲染
+                this.renderSimilarity();
+                // 暂时不需要这个功能
+                this.renderPixelVector().then(this.emitHover);
+            }
+        },
         // 点击事件 暂时不需要这个功能
         updateMarkerPosition(event) {
             if (containsCoordinate(this.extent, event.coordinate)) {
-                if (this.map.hasFeatureAtPixel(event.pixel)) {
-                    this.markerLayer.setVisible(false);
-                    this.emitUnselect();
-                } else {
-                    this.markerLayer.setVisible(true);
-                    this.markerFeature.getGeometry().setCoordinates(event.coordinate);
-                    let oldPosition = this.pixelVectorProgram.getMousePosition();
-                    let newPosition = event.coordinate.map(Math.floor);
-                    this.pixelVectorProgram.setMousePosition(newPosition);
-                    if (oldPosition[0] !== newPosition[0] || oldPosition[1] !== newPosition[1]) {
-                        this.renderPixelVector().then(this.emitSelect);
-                    }
-                }
+                console.log("event.coordinate", event.coordinate)
+                // if (this.map.hasFeatureAtPixel(event.pixel)) {
+                //     this.markerLayer.setVisible(false);
+                //     this.emitUnselect();
+                // } else {
+                //     this.markerLayer.setVisible(true);
+                //     this.markerFeature.getGeometry().setCoordinates(event.coordinate);
+                //     let oldPosition = this.pixelVectorProgram.getMousePosition();
+                //     let newPosition = event.coordinate.map(Math.floor);
+                //     this.pixelVectorProgram.setMousePosition(newPosition);
+                //     if (oldPosition[0] !== newPosition[0] || oldPosition[1] !== newPosition[1]) {
+                //         this.renderPixelVector().then(this.emitSelect);
+                //     }
+                // }
             }
         },
         setReady() {
@@ -367,10 +389,20 @@ export default {
                 this.initDataset();
             }
         },
+        dimensions(newVal, oldVal) {
+            // 当dataset变化时，这里的代码会被执行
+            console.log('dimensions has changed!');
+            console.log("h", this.dimensions.height)
+            console.log("w", this.dimensions.width)
+            this.updateDimensions()
+        }
     },
     mounted() {
         //
     },
+    beforeDestroy(){
+        
+    }
 };
 </script>
 
@@ -379,7 +411,7 @@ export default {
     width: 100%;
     height: 100%;
     position: relative;
-
+    
     .loading-overlay {
         position: absolute;
         top: 0;
