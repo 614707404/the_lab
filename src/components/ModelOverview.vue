@@ -23,7 +23,7 @@
             <ThreeModel :objPath="'predict3.obj'" :key="renderKey"></ThreeModel>
         </div>
 
-        <div id="gradient"></div>
+        <!-- <div id="gradient"></div> -->
 
         <svg ref="svg" style="height: 100%; width: 100%;"></svg>
         <div id="CNN-config" class="config-item" v-show="editVisiable">
@@ -444,7 +444,7 @@
                 ],[
                     [1050, 600],  
                     [1050, 700],
-                    [800, 700]
+                    [700, 700]
                 ],[
                     [700, 700], 
                     [450, 700],

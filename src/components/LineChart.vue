@@ -18,11 +18,11 @@ export default {
   props: {
     width: {
       type: Number,
-      default: 400
+      default: 200
     },
     height: {
       type: Number,
-      default: 400
+      default: 180
     },
     datasets: {
       type: Array,
@@ -57,14 +57,14 @@ export default {
       const yMax = d3.max(this.datasets, d => Math.ceil(d3.max(d.data)));
       const xMax = this.xData.length > 0 ? this.xData.length - 1 : 0;
 
-      const xScale = d3.scaleLinear().domain([0, xMax]).range([50, this.width - 50]);
-      const yScale = d3.scaleLinear().domain([0, yMax]).range([this.height - 50, 50]).nice();
+      const xScale = d3.scaleLinear().domain([0, xMax]).range([10, this.width - 10]);
+      const yScale = d3.scaleLinear().domain([0, yMax]).range([this.height - 10, 10]).nice();
 
       const xAxis = d3.axisBottom(xScale).ticks(10).tickFormat((d, i) => this.xData[i]);
       const yAxis = d3.axisLeft(yScale).tickFormat(d3.format("d"));
 
-      svg.append("g").attr("transform", `translate(0,${this.height - 50})`).call(xAxis);
-      svg.append("g").attr("transform", "translate(50,0)").call(yAxis);
+      svg.append("g").attr("transform", `translate(0,${this.height - 10})`).call(xAxis);
+      svg.append("g").attr("transform", "translate(10,0)").call(yAxis);
 
       if (this.xData.length > 0) {
         this.datasets.forEach((dataset, index) => {
@@ -89,8 +89,8 @@ export default {
 <style scoped>
 .legend {
   display: flex;
-  justify-content: center;
-  margin-bottom: 10px;
+  justify-content: flex-start;
+  margin-left: 10px;
 }
 
 .legend-item {

@@ -81,13 +81,14 @@
                 <div class="right-section">
                     <!-- <button class="btn btn-primary" @click="showInitModal">Start Application</button> -->
                     <!-- <LineChart :data="chartData"></LineChart> -->
-                    <LineChart :datasets="yData_1" :xData="xData"></LineChart>
-                    <LineChart :datasets="yData_2" :xData="xData"></LineChart>
-                    <LineChart :datasets="yData_3" :xData="xData"></LineChart>
+                    <LineChart class= "linechart" :datasets="yData_1" :xData="xData"></LineChart>
+                    <LineChart class= "linechart" :datasets="yData_2" :xData="xData"></LineChart>
+                    <LineChart class= "linechart" :datasets="yData_3" :xData="xData"></LineChart>
                 </div>
             </div>
             
         </div>
+        
         <!-- <div class="main-aside">
             <PixelVectorDisplay
                 ref="pixelVectorDisplay"
@@ -96,6 +97,7 @@
             ></PixelVectorDisplay>
         </div> -->
     </div>
+    <Chat class="chat-box"> </Chat>
     <input type="file" name="file" accept="application/zip" ref="fileInput" @change="selectedFile" style="display: none;">
 </div>
 </template>
@@ -112,6 +114,7 @@ import LineChart from './components/LineChart.vue';
 import ThreeModel from './components/ThreeModel.vue';
 import ThreeModelMouse from './components/ThreeModelMouse.vue';
 import Test from './components/Test.vue';
+import Chat from './components/Chat.vue';
 
 const DATASET_KEYS = [
     'precision',
@@ -139,7 +142,8 @@ export default {
     BModal,
     LineChart,
     ThreeModel,
-    ThreeModelMouse
+    ThreeModelMouse,
+    Chat
 },
     data() {
         return {
@@ -427,7 +431,12 @@ export default {
     height: 100vh;
     display: flex;
     flex-direction: column;
-
+    position: relative;
+    .chat-box{
+        position: absolute;
+        left: 1700px;
+        top: 300px;
+    }
     .navbar {
         // border-bottom: 1px solid $gray-900;
     }
@@ -469,7 +478,7 @@ export default {
     //         }
     //     }
     // }
-
+    
     .main-content{
         display: flex;
         flex-direction: column;
@@ -551,6 +560,9 @@ export default {
                 width: 300px;
                 height: 100%;
                 background-color: #eee; /* 只是为了可视化，你可以根据需要修改 */
+                .linechart{
+                    margin: 20px;
+                }
             }
         }
         
