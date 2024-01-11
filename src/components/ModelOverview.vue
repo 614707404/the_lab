@@ -9,6 +9,16 @@
         <div id="feature2" class="feature" @click="featureClick_2"></div>
         <div id="feature3" class="feature" @click="featureClick_3"></div>
 
+        <span class="annotation annotation1">Input Image</span>
+        <span class="annotation annotation2">Ellipsoid Mesh</span>
+        <span class="annotation annotation3">156 vertices</span>
+        <span class="annotation annotation4">628 vertices</span>
+        <span class="annotation annotation5">2466 vertices</span>
+        <span class="annotation annotation6">Perceptual Feature Pooling</span>
+        <span class="annotation annotation7">224x224x3</span>
+        <span class="annotation annotation8">112x112x32</span>
+        <span class="annotation annotation9">28x28x128</span>
+
         <div id="initmodel">
             <img  src="orig.png" style="height: 100%; width: 100%;"/>
         </div>
@@ -38,11 +48,11 @@
         </div>
         <div id="lossing-config" class="config-item" v-show="editVisiable">
             <label>Loss = </label>
-            <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+            <b-form-spinbutton v-model="value_" min="0" max="10" class="spin-item"></b-form-spinbutton>
             <label>Chamfer loss + </label>
-            <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+            <b-form-spinbutton v-model="value_" min="0" max="10" class="spin-item"></b-form-spinbutton>
             <label>Normal loss + </label>
-            <b-form-spinbutton v-model="value" min="0" max="10" class="spin-item"></b-form-spinbutton>
+            <b-form-spinbutton v-model="value_" min="0" max="10" class="spin-item"></b-form-spinbutton>
             <label>Regularization</label>
         </div>
         <div id="Init-config" class="config-item" v-show="editVisiable">
@@ -85,6 +95,7 @@
             return {
                 renderKey: 0,
                 value: 5,
+                value_: 1,
                 CNN: 'VGG',
                 CNN_options: [
                     { value: 'VGG', text: 'VGG' },
@@ -100,16 +111,19 @@
                     { value: 'Edge', text: 'Edge' },
                     { value: 'Face', text: 'Face' },
                 ],
-                l_rate: 'Edge',
+                l_rate: '0.001',
                 l_rate_options: [
-                    { value: 'Edge', text: 'Edge' },
-                    { value: 'Face', text: 'Face' },
+                    { value: '0.001', text: '0.001' },
+                    { value: '0.003', text: '0.003' },
+                    { value: '0.1', text: '0.1' },
+                    { value: '0.3', text: '0.3' },
                 ],
-                optimizer: 'Edge',
+                optimizer: 'Adam',
                 optimizer_options: [
-                    { value: 'Edge', text: 'Edge' },
-                    { value: 'Face', text: 'Face' },
+                    { value: 'Adam', text: 'Adam' },
+                    { value: 'SGD', text: 'SGD' },
                 ],
+                
                 // imgPath: 'input.png',
                 paths:[],
                 feature_1_flag : true,
@@ -493,7 +507,23 @@
         //     position: absolute; /* 使其脱离正常文档流 */
         //     top: 0;
         //     left: 0;
-        
+        .annotation {
+            position: absolute;
+            padding: 5px;
+            /* You'll need to adjust the top and left values based on your specific needs */
+        }
+
+        /* Example annotation positions */
+        .annotation1 { top: 70px; left: 95px; }
+        .annotation2 { top: 420px; left: 95px; }
+        .annotation3 { top: 595px; left: 345px; }
+        .annotation4 { top: 595px; left: 645px; }
+        .annotation5 { top: 595px; left: 945px; }
+        .annotation6 { top: 310px; left: 345px; }
+        .annotation7 { top: 25px; left: 345px; }
+        .annotation8 { top: 25px; left: 645px; }
+        .annotation9 { top: 25px; left: 945px; }
+        /* Add more as needed */
         #gradient{
             width: 100px;
             height: 100px;

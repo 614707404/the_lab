@@ -2,20 +2,19 @@
     <div class="controlbar">
         <!--    标题 -->
         <div class="top-panel">
-            <div id="page-title" class="top-panel-item"><strong>P2M</strong> Lab</div>
+            <div id="page-title" class="top-panel-item"><strong>P2M</strong>Vis</div>
         <!--    选择输入图片-->
         <div id="distribution-selection" class="top-panel-item">
           <div class="top-column-title">Input Image</div>
           <div id="distribution-image-list">
-            <img class="distribution-image" src="../assets/plane1.png"/>
-            <img class="distribution-image" src="../assets/plane2.png"/>
+            <img class="distribution-image" src="input.png"/>
+            <img class="distribution-image" src="input_2.png"/>
             <img class="distribution-image" src="../assets/0.png"/>
             <img class="distribution-image" src="../assets/2.png"/>
           </div>
-            <!--      是否使用预训练模型-->
             <div id="distribution-selection-checkbox">
                 <input type="checkbox" id="toggle-pretrained" v-model="pre_trained" />
-                <label for="toggle-pretrained">Use pre-trained model</label>
+                <label for="toggle-pretrained">pre-trained model</label>
             </div>
         </div>
 

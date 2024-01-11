@@ -89,14 +89,14 @@ export default {
 <style scoped>
 .legend {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column; /* This will stack the legend items vertically */
   margin-left: 10px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
-  margin-right: 10px;
+  margin-bottom: 10px; /* Add space between legend items */
 }
 
 .color-box {
@@ -105,3 +105,4 @@ export default {
   margin-right: 5px;
 }
 </style>
+

@@ -2,7 +2,7 @@
 <div class="show-container">
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-            Welcome to P2M Lab, have fun!
+            Welcome to P2MVis, have fun!
         </a>
     </nav>
     <div class="main">
@@ -83,7 +83,7 @@
                     <!-- <LineChart :data="chartData"></LineChart> -->
                     <LineChart class= "linechart" :datasets="yData_1" :xData="xData"></LineChart>
                     <LineChart class= "linechart" :datasets="yData_2" :xData="xData"></LineChart>
-                    <LineChart class= "linechart" :datasets="yData_3" :xData="xData"></LineChart>
+                    <!-- <LineChart class= "linechart" :datasets="yData_3" :xData="xData"></LineChart> -->
                 </div>
             </div>
             
@@ -159,21 +159,23 @@ export default {
             socket: null,
             editVisiable: false,
             img_feat_data:{},
-            objPath:'test.obj',
+            objPath:'predict3.obj',
             xData: [],
             yData_1: [
-                { name: "mean loss", data: [] }
+                { name: "Current Loss", data: [] },
+                { name: "Average Loss", data: [] },
+                
             ],
             yData_2: [
-                { name: "p_loss", data: [] },
-                { name: "e_loss", data: [] },
-                { name: "n_loss", data: [] },
-                { name: "loss", data: [] },
+                { name: "Chamfer Loss", data: [] },
+                { name: "Edge Regularization", data: [] },
+                { name: "Normal Loss", data: [] },
+                { name: "Laplacian Regularization", data: [] },
             ],
-            yData_3: [
-                { name: "l_loss", data: [] },
-                { name: "m_loss", data: [] }
-            ],
+            // yData_3: [
+                
+            //     { name: "m_loss", data: [] }
+            // ],
             dimensions: {
                 height: -1,
                 width: -1
@@ -360,37 +362,38 @@ export default {
             //         y7: parsedData.m_loss})
             // console.log('Received message from server: ' + event.data);
             this.xData.push(parseInt(parsedData.message));
-            let dataset = this.yData_1.find(d => d.name === "mean loss");
-            if (dataset) {
-                dataset.data.push(parsedData.number2);
-            }
-
-            dataset = this.yData_2.find(d => d.name === "loss");
+            let  dataset = this.yData_1.find(d => d.name === "Current Loss");
             if (dataset) {
                 dataset.data.push(parsedData.number1);
             }
 
-            dataset = this.yData_2.find(d => d.name === "p_loss");
+            dataset = this.yData_1.find(d => d.name === "Average Loss");
+            if (dataset) {
+                dataset.data.push(parsedData.number2);
+            }
+
+            
+            dataset = this.yData_2.find(d => d.name === "Chamfer Loss");
             if (dataset) {
                 dataset.data.push(parsedData.p_loss);
             }
 
-            dataset = this.yData_2.find(d => d.name === "e_loss");
+            dataset = this.yData_2.find(d => d.name === "Edge Regularization");
             if (dataset) {
                 dataset.data.push(parsedData.e_loss);
             }
 
-            dataset = this.yData_2.find(d => d.name === "n_loss");
+            dataset = this.yData_2.find(d => d.name === "Normal Loss");
             if (dataset) {
                 dataset.data.push(parsedData.n_loss);
             }
 
-            dataset = this.yData_3.find(d => d.name === "m_loss");
-            if (dataset) {
-                dataset.data.push(parsedData.m_loss);
-            }
+            // dataset = this.yData_3.find(d => d.name === "m_loss");
+            // if (dataset) {
+            //     dataset.data.push(parsedData.m_loss);
+            // }
 
-            dataset = this.yData_3.find(d => d.name === "l_loss");
+            dataset = this.yData_2.find(d => d.name === "Laplacian Regularization");
             if (dataset) {
                 dataset.data.push(parsedData.l_loss);
             }
@@ -561,7 +564,7 @@ export default {
                 height: 100%;
                 background-color: #eee; /* 只是为了可视化，你可以根据需要修改 */
                 .linechart{
-                    margin: 20px;
+                    margin: 20px 20px 100px 20px;
                 }
             }
         }
