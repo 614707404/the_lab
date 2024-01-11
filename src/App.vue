@@ -2,7 +2,8 @@
 <div class="show-container">
     <nav class="navbar navbar-dark bg-dark">
         <a class="navbar-brand" href="#">
-            Welcome to P2MVis, have fun!
+            <img src="logo_transparent_background.png" alt="Logo" style="height: 30px; margin-right: 10px;">
+            <strong>P2M VIS</strong>
         </a>
     </nav>
     <div class="main">
